@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TypePostRequest;
+use App\Http\Requests\TypeUpdatedRequest;
 use App\Models\Type;
 use Illuminate\Http\Request;
 
@@ -152,25 +153,109 @@ class TypeController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @OA\Put(
+     * path="/type",
+     * summary="Update type",
+     * description="Update type",
+     * operationId="type-put",
+     * tags={"Type"},
+     * security={ {"sanctum": {} }},
+     * @OA\Parameter(
+     *      description="id",
+     *      in="path",
+     *      name="id",
+     *      required=true,
+     *      example="1",
+     *      @OA\Schema(
+     *          type="integer",
+     *          format="int64"
+     *      )
+     *  ),
+     * @OA\RequestBody(
+     *    required=true,
+     *    description="Update type",
+     *    @OA\JsonContent(
+     *       required={"name"},
+     *       @OA\Property(property="name", type="string", example="Danger"),
+     *    ),
+     * ),
+     * @OA\Response(
+     *    response=200,
+     *    description="Success",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="data", type="object",
+     *          @OA\Property(property="type", type="object",
+     *              @OA\Property(property="id", type="string", example="1"),
+     *              @OA\Property(property="name", type="string", example="danger"),
+     *          )
+     *       ),
+     *       @OA\Property(property="success", type="boolean", example="true"),
+     *       @OA\Property(property="message", type="string", example="Type created with success"),
+     *        )
+     *     ),
+     *  @OA\Response(
+     *    response=400,
+     *    description="Wrong error",
+     *    @OA\JsonContent(
+     *       @OA\Property(property="success", type="boolean", example="false"),
+     *       @OA\Property(property="message", type="string", example="Sorry, wrong error. Please try again!")
+     *        )
+     *     ),
+     *  )
+     * )
      */
-    public function update(Request $request, $id)
+    public function update(TypeUpdatedRequest $request, $id)
     {
-        //
+        $type = Type::find($id);
+        if( $type->update($request->validated()) ){
+            return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Type updated with success!' ]);
+        }
+        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @OA\Delete(
+     * path="/type/{id}",
+     * summary="Delete type",
+     * description="Delete type",
+     * operationId="type-delete",
+     * tags={"Type"},
+     * security={ {"sanctum": {} }},
+     * @OA\Parameter(
+     *      description="id",
+     *      in="path",
+     *      name="id",
+     *      required=true,
+     *      example="1",
+     *      @OA\Schema(
+     *          type="integer",
+     *          format="int64"
+     *      )
+     *  ),
+     * @OA\Response(
+     *      response=200,
+     *      description="The resource was deleted successfully",
+     *      @OA\JsonContent(
+     *           @OA\Property(property="success", type="boolean", example="true"),
+     *           @OA\Property(property="message", type="string", example="The resource was deleted successfully")
+     *      )
+     *  ),
+     *  @OA\Response(
+     *      response=400,
+     *      description="Wrong error",
+     *      @OA\JsonContent(
+     *          @OA\Property(property="success", type="boolean", example="false"),
+     *          @OA\Property(property="message", type="string", example="Sorry, wrong error. Please try again")
+     *      )
+     *  ),
+     * )
      */
     public function destroy($id)
     {
-        //
+        if( $type = Type::find($id) ){
+            $type->delete();
+            return response()->json(['data' => ['type' => [] ], 'status' => 'success','message' => 'The resource was deleted successfully!' ]);
+        }
+        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
     }
 }
