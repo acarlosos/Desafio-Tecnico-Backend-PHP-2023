@@ -32,10 +32,9 @@ class TaskPostRequest extends FormRequest
             'type_id' => 'required|integer',
             'description' => 'required|string',
             'start_date' => 'required|date',
-            'deadline' => 'nullable|date',
-            'finish_date' => 'nullable|date',
+            'deadline' => 'required|date',
+            'finish_date' => 'required|date',
             'status' => ['required', new Enum(TaskStatusEnum::class)],
-
 
         ];
     }

@@ -32,8 +32,8 @@ class TaskUpdateRequest extends FormRequest
             'type_id' => 'required|integer',
             'description' => 'required|string',
             'start_date' => 'required|date',
-            'deadline' => 'nullable|date',
-            'finish_date' => 'nullable|date',
+            'deadline' => 'required|date',
+            'finish_date' => 'required|date',
             'status' => [Rule::enum(TaskStatusEnum::class)],
         ];
     }
