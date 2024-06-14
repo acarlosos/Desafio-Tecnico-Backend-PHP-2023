@@ -92,6 +92,261 @@
                     }
                 }
             }
+        },
+        "/type": {
+            "get": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Return Types",
+                "description": "Return Types",
+                "operationId": "type-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "types": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "custom"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Create type",
+                "description": "Create type",
+                "operationId": "type-store",
+                "requestBody": {
+                    "description": "Create type",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "danger"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "example": "1"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "danger"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Type created with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/type/{id}": {
+            "get": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Receive a type",
+                "description": "Receive a type",
+                "operationId": "type-show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "2"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "danger"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment updated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     }
 }

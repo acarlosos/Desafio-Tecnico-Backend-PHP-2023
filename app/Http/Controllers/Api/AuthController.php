@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 class AuthController extends Controller
 {
 
-
     /**
      * @OA\Post(
      * path="/auth/login",
