@@ -18,7 +18,6 @@ class CreateTasksTable extends Migration
             $table->foreignId( 'user_id' )->constrained();
             $table->foreignId( 'type_id' )->constrained();
             $table->string('title');
-            $table->string('type');
             $table->longText('description');
             $table->date('start_date')->nullable();
             $table->date('deadline')->nullable();

@@ -22,7 +22,6 @@ class Task extends Model
     ];
 
     protected $casts = [
-        'status' => TaskStatusEnum::class,
         'start_date' => 'date',
         'deadline' => 'date',
         'finish_date' => 'date',

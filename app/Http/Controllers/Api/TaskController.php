@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskPostRequest;
 use App\Http\Requests\TaskUpdateRequest;
 use App\Models\Task;
+use App\Services\TaskService;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -113,10 +114,16 @@ class TaskController extends Controller
      */
     public function store(TaskPostRequest $request)
     {
-        if($task = Task::create($request->validated())){
-            return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Task created with success!' ]);
+        try {
+            $data = (new TaskService())->store($request->validated());
+            if($task = Task::create($data)){
+                return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Task created with success!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], 400);
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+
 
     }
 
