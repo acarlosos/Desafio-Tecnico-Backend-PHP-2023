@@ -6,11 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TaskPostRequest;
 use App\Http\Requests\TaskUpdateRequest;
 use App\Models\Task;
+use App\Repository\TaskRepository;
 use App\Services\TaskService;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    protected $service;
+    protected $repository;
+
+    public function __construct(TaskRepository $repository , TaskService $service ) {
+        $this->repository = $repository;
+        $this->service = $service;
+    }
+
     /**
      * @OA\Get(
      * path="/task",
@@ -54,8 +63,13 @@ class TaskController extends Controller
      */
     public function index()
     {
-        $tasks = Task::orderBy('deadline')->get();
-        return response()->json(['data' => ['tasks' => $tasks ], 'status' => 'success','message' => 'List of tasks!' ]);
+
+        try {
+            $tasks = $this->repository->all()->sortBy('deadline');
+            return response()->json(['data' => ['tasks' => $tasks ], 'status' => 'success','message' => 'List of tasks!' ]);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
+        }
     }
 
     /**
@@ -115,15 +129,13 @@ class TaskController extends Controller
     public function store(TaskPostRequest $request)
     {
         try {
-            $data = (new TaskService())->store($request->validated());
-            if($task = Task::create($data)){
+            if($task = $this->service->store($request->validated())){
                 return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Task created with success!' ]);
             }
             return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
         } catch (\Exception $e) {
-            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], 400);
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-
 
     }
 
@@ -179,7 +191,7 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        if($task = Task::find($id)){
+        if($task = $this->repository->find($id)){
             return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Show Task!' ]);
         }
         return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 400);
@@ -252,11 +264,15 @@ class TaskController extends Controller
      */
     public function update(TaskUpdateRequest $request, $id)
     {
-        $task = Task::find($id);
-        if( $task->update($request->validated()) ){
-            return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Task updated with success!' ]);
+        try{
+            if( $task = $this->service->update($id, $request->validated()) ){
+                return response()->json(['data' => ['task' => $task ], 'status' => 'success','message' => 'Task updated with success!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        }catch(\Exception $e){
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+
     }
 
     /**
@@ -298,10 +314,13 @@ class TaskController extends Controller
      */
     public function destroy($id)
     {
-        if( $task = Task::find($id) ){
-            $task->delete();
-            return response()->json(['data' => ['task' => [] ], 'status' => 'success','message' => 'The resource was deleted successfully!' ]);
+        try {
+            if( $this->repository->delete($id) ){
+                return response()->json(['data' => ['task' => [] ], 'status' => 'success','message' => 'The resource was deleted successfully!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
     }
 }

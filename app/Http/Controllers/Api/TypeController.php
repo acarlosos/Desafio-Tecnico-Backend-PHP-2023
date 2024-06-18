@@ -5,32 +5,39 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TypePostRequest;
 use App\Http\Requests\TypeUpdatedRequest;
-use App\Models\Type;
-use Illuminate\Http\Request;
+use App\Repository\TypeRepository;
+use App\Services\TypeService;
 
 class TypeController extends Controller
 {
+    protected $service;
+    protected $repository;
+
+    public function __construct(TypeService $service, TypeRepository $repository) {
+        $this->service = $service;
+        $this->repository = $repository;
+    }
     /**
-     * @OA\Get(
-     * path="/type",
-     * summary="Return Types",
-     * description="Return Types",
-     * operationId="type-index",
-     * tags={"Type"},
-     * security={ {"sanctum": {} }},
-     * @OA\Response(
-     *    response=200,
-     *    description="Success",
-     *    @OA\JsonContent(
-     *       @OA\Property(property="success", type="boolean", example="true"),
-        *       @OA\Property(property="data", type="object",
-        *           @OA\Property(property="types", type="array",
-        *               @OA\Items(
-        *                   @OA\Property(property="id", type="integer", example="1"),
-        *                   @OA\Property(property="name", type="string", example="custom"),
-        *               )
-        *           )
-        *       ),
+     *  @OA\Get(
+     *      path="/type",
+     *      summary="Return Types",
+     *      description="Return Types",
+     *      operationId="type-index",
+     *      tags={"Type"},
+     *      security={ {"sanctum": {} }},
+     *      @OA\Response(
+     *          response=200,
+     *          description="Success",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="success", type="boolean", example="true"),
+    *       @OA\Property(property="data", type="object",
+    *           @OA\Property(property="types", type="array",
+    *               @OA\Items(
+    *                   @OA\Property(property="id", type="integer", example="1"),
+    *                   @OA\Property(property="name", type="string", example="custom"),
+    *               )
+    *           )
+    *       ),
      *        )
      *     ),
      *  @OA\Response(
@@ -46,8 +53,12 @@ class TypeController extends Controller
      */
     public function index()
     {
-        $types = Type::orderBy('name')->get();
-        return response()->json(['data' => ['types' => $types ], 'status' => 'success','message' => 'List of types!' ]);
+        try {
+            $types = $this->repository->all()->sortBy('name');
+            return response()->json(['data' => ['types' => $types ], 'status' => 'success','message' => 'List of types!' ]);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
+        }
     }
 
     /**
@@ -93,10 +104,14 @@ class TypeController extends Controller
      */
     public function store(TypePostRequest $request)
     {
-        if($type = Type::create($request->validated())){
-            return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Type created with success!' ]);
+        try {
+            if($type = $this->service->store($request->validated()) ){
+                return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Type created with success!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
 
     }
 
@@ -146,11 +161,19 @@ class TypeController extends Controller
      */
     public function show($id)
     {
-        if($type = Type::find($id)){
-            return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Show Type!' ]);
+
+        try {
+            if($type = $this->repository->find($id)){
+                return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Show Type!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 400);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 400);
     }
+
+
+
 
     /**
      * @OA\Put(
@@ -206,11 +229,16 @@ class TypeController extends Controller
      */
     public function update(TypeUpdatedRequest $request, $id)
     {
-        $type = Type::find($id);
-        if( $type->update($request->validated()) ){
-            return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Type updated with success!' ]);
+        try {
+            if( $type = $this->service->update($id, $request->validated() )  ){
+                return response()->json(['data' => ['type' => $type ], 'status' => 'success','message' => 'Type updated with success!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+
+
     }
 
     /**
@@ -252,10 +280,13 @@ class TypeController extends Controller
      */
     public function destroy($id)
     {
-        if( $type = Type::find($id) ){
-            $type->delete();
-            return response()->json(['data' => ['type' => [] ], 'status' => 'success','message' => 'The resource was deleted successfully!' ]);
+        try {
+            if( $this->service->delete($id) ){
+                return response()->json(['data' => ['type' => [] ], 'status' => 'success','message' => 'The resource was deleted successfully!' ]);
+            }
+            return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
+        } catch (\Exception $e) {
+            return response()->json(["data" => [] , "status" => 'error', 'message' => $e->getMessage(), ], $e->getCode());
         }
-        return response()->json(["data" => [] , "status" => 'error', 'message' => 'Sorry, wrong error. Please try again', ], 204);
     }
 }

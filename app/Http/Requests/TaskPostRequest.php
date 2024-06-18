@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Enums\TaskStatusEnum;
+use App\Rules\Weekend;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -29,13 +30,12 @@ class TaskPostRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'type_id' => 'required|integer',
+            'type' => 'required|string',
             'description' => 'required|string',
-            'start_date' => 'required|date',
-            'deadline' => 'required|date',
-            'finish_date' => 'required|date',
+            'start_date' => ['required', 'date', new Weekend],
+            'deadline' =>  ['required', 'date', new Weekend],
+            'finish_date' =>  ['required', 'date', new Weekend],
             'status' => ['required', new Enum(TaskStatusEnum::class)],
-
         ];
     }
 

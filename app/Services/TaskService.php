@@ -1,40 +1,60 @@
 <?php
 
 namespace App\Services;
+use App\Models\Task;
+use App\Repository\TaskRepository;
+use App\Repository\TypeRepository;
 use Carbon\Carbon;
 
 class TaskService
 {
+    protected $repository;
+    protected $typeRepository;
+    public function __construct(TaskRepository $repository, TypeRepository $typeRepository) {
+        $this->repository = $repository;
+        $this->typeRepository = $typeRepository;
+    }
     public function store($data)
     {
-        $data['user_id'] = auth()->user()->id;
-
-        if(isset($data['start_date'])){
-                $this->isWeekend( $data['start_date'], 'Start date');
+        $dates = [$data['start_date'], $data['finish_date']];
+        if($this->repository->availablePeriod($dates)){
+            $data = $this->checkType($data);
+            return $this->repository->create($data);
+        }else{
+            throw new \Exception( "Unavailable period", 400);
         }
-        if(isset($data['deadline'])){
-                $this->isWeekend( $data['deadline'], 'Start date');
-        }
-        if(isset($data['finish_date'])){
-                $this->isWeekend( $data['finish_date'], 'Start date');
-        }
-
-        $ok = \DB::select("SELECT * FROM tasks WHERE (? BETWEEN start_date AND finish_date) OR (? BETWEEN start_date AND finish_date)",
-        [
-            $data['start_date'],
-            $data['finish_date']
-        ]);
-        if(count( $ok)){
-            throw new \Exception( "Unavailable period", 1);
-        }
-        return $data;
     }
 
-    private function isWeekend($date, $day)
+    private function checkType($data)
     {
-        $check = Carbon::parse($date);
-        if($check->isWeekend()){
-            throw new \Exception($day . " date is weekend", 1);
+        if($type = $this->typeRepository->firstOrCreate( ['name' => $data['type'] ])){
+            $data['type_id'] = $type->id;
+            return $data;
         }
+        throw new \Exception( "Unavailable type", 400);
     }
+
+    public function update(int $id, $data)
+    {
+        if($task = $this->repository->find($id)){
+
+            $start_date = Carbon::parse($data['start_date']);
+            $finish_date = Carbon::parse($data['finish_date']);
+
+            if($start_date == $task->start_date && $finish_date == $task->finish_date ){
+                $data = $this->checkType($data);
+                return $this->repository->update($id, $data);
+            }else{
+                $dates = [$data['start_date'], $data['finish_date']];
+                if($this->repository->availablePeriod($dates)){
+                    $data = $this->checkType($data);
+                    return $this->repository->update($id, $data);
+                }
+                throw new \Exception( "Unavailable period", 400);
+            }
+        }
+        throw new \Exception( "Unavailable Task", 400);
+    }
+
 }
+

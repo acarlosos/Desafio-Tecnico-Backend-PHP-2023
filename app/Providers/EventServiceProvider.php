@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Task;
+use App\Models\Type;
+use App\Observers\TaskObserver;
+use App\Observers\TypeObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -27,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        Type::observe(TypeObserver::class);
+        Task::observe(TaskObserver::class);
     }
 }

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Validation\Rules\Enum;
 
 class TaskUpdateRequest extends FormRequest
 {
@@ -29,12 +30,12 @@ class TaskUpdateRequest extends FormRequest
     {
         return [
             'title' => 'required|string',
-            'type_id' => 'required|integer',
+            'type' => 'required|string',
             'description' => 'required|string',
             'start_date' => 'required|date',
             'deadline' => 'required|date',
             'finish_date' => 'required|date',
-            'status' => [Rule::enum(TaskStatusEnum::class)],
+            'status' => ['required', new Enum(TaskStatusEnum::class)],
         ];
     }
     public function failedValidation(Validator $validator)

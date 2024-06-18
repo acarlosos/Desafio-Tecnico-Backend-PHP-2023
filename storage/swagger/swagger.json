@@ -1,0 +1,1153 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Desafio Técnico - Backend PHP 2023",
+        "description": "Desafio Técnico - Backend PHP 2023",
+        "contact": {
+            "email": "acarlos.os@hotmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "http://desafio.teste/api",
+            "description": "local"
+        }
+    ],
+    "paths": {
+        "/auth/login": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Sign in",
+                "description": "Login by email, password",
+                "operationId": "App\\Http\\Controllers\\Api\\AuthController::login",
+                "requestBody": {
+                    "description": "Pass user credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "email",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "example": "user1@mail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "PassWord12345"
+                                    },
+                                    "device_name": {
+                                        "type": "string",
+                                        "format": "text",
+                                        "example": "backend"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string",
+                                                    "example": "2517|NRp4WdFWgveoB22tKV9BWaHBosgXq7KDMQBM"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Wrong credentials response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong email address or password. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/task": {
+            "get": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Return tasks",
+                "description": "Return tasks",
+                "operationId": "task-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "types": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "type_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "user_id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "custom"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "custom"
+                                                            },
+                                                            "start_date": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "custom"
+                                                            },
+                                                            "deadline": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "custom"
+                                                            },
+                                                            "finish_date": {
+                                                                "type": "string",
+                                                                "format": "date",
+                                                                "example": "custom"
+                                                            },
+                                                            "status": {
+                                                                "type": "string",
+                                                                "example": "custom"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Update task",
+                "description": "Update task",
+                "operationId": "task-put",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update type",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [],
+                                "properties": {
+                                    "type_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "custom"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "custom"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "deadline": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "finish_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "open or concluded"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "type_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "user_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "start_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "deadline": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "finish_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "open"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Type created with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Create task",
+                "description": "Create task",
+                "operationId": "task-store",
+                "requestBody": {
+                    "description": "Create task",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "type_id",
+                                    "title",
+                                    "description",
+                                    "start_date",
+                                    "deadline",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "type_id": {
+                                        "type": "integer",
+                                        "example": "1"
+                                    },
+                                    "title": {
+                                        "type": "string",
+                                        "example": "custom"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "example": "custom"
+                                    },
+                                    "start_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "deadline": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "finish_date": {
+                                        "type": "string",
+                                        "format": "date",
+                                        "example": "custom"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "example": "open or concluded"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "type_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "user_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "start_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "deadline": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "finish_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "open"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Task created with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/task/{id}": {
+            "get": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Receive a task",
+                "description": "Receive a task",
+                "operationId": "task-show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "type_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "user_id": {
+                                                            "type": "integer",
+                                                            "example": "1"
+                                                        },
+                                                        "title": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "description": {
+                                                            "type": "string",
+                                                            "example": "custom"
+                                                        },
+                                                        "start_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "deadline": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "finish_date": {
+                                                            "type": "string",
+                                                            "format": "date",
+                                                            "example": "custom"
+                                                        },
+                                                        "status": {
+                                                            "type": "string",
+                                                            "example": "open"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment updated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Delete task",
+                "description": "Delete task",
+                "operationId": "task-delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The resource was deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The resource was deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/type": {
+            "get": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Return Types",
+                "description": "Return Types",
+                "operationId": "type-index",
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "types": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": "1"
+                                                            },
+                                                            "name": {
+                                                                "type": "string",
+                                                                "example": "custom"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Update type",
+                "description": "Update type",
+                "operationId": "type-put",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "requestBody": {
+                    "description": "Update type",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Danger"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "example": "1"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "danger"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Type created with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Create type",
+                "description": "Create type",
+                "operationId": "type-store",
+                "requestBody": {
+                    "description": "Create type",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "danger"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string",
+                                                            "example": "1"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "danger"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Type created with success"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/type/{id}": {
+            "get": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Receive a type",
+                "description": "Receive a type",
+                "operationId": "type-show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "properties": {
+                                                "type": {
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "integer",
+                                                            "example": "2"
+                                                        },
+                                                        "name": {
+                                                            "type": "string",
+                                                            "example": "danger"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Comment updated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Type"
+                ],
+                "summary": "Delete type",
+                "description": "Delete type",
+                "operationId": "type-delete",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        },
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The resource was deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "true"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The resource was deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Wrong error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": "false"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sorry, wrong error. Please try again"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "sanctum": {
+                "type": "http",
+                "description": "Laravel Sanctum token authentication",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}
